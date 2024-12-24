@@ -1,17 +1,34 @@
 use std::collections::{HashMap, HashSet};
 
-// Grammar rule in Chomsky Normal Form
+/// Grammar rule
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Rule {
     Terminal(String),
     NonTerminal(String, String),
 }
 
-// Determine if a string can be derived from a grammar
+/// CYK algorithm determines if a string can be derived from a context-free grammar in
+/// Chomsky normal form.
+///
+/// # Arguments
+///
+/// * `input` - The string to derive.
+/// * `grammar` - The hash map of non-terminal symbols mapped to vectors of production rules
+///   in Chomsky normal form. A production rule can be either a:
+///     - Terminal rule (e.g., `A -> 'a'`)
+///     - Non-terminal rule (e.g., `A -> BC`)
+/// * `start_symbol` - The start symbol of the grammar (e.g., `S`).
+///
+/// # Returns
+///
+/// A boolean indicating whether the input string can be derived from the grammar.
+/// - Returns `true` if the input string can be derived.
+/// - Returns `false` otherwise.
 pub fn cyk(input: &str, grammar: &HashMap<String, Vec<Rule>>, start_symbol: &str) -> bool {
     let n = input.len();
 
     if n == 0 {
+        // Check for start symbol and empty string grammar rule (e.g., S -> ε)
         if let Some(rules) = grammar.get(start_symbol) {
             for rule in rules {
                 if let Rule::Terminal(term) = rule {
