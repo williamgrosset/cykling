@@ -3,21 +3,46 @@ use std::collections::HashMap;
 use cykling::*;
 
 #[test]
-fn test_regular_grammar() {
+fn test_basic_grammar() {
     let mut grammar = HashMap::new();
 
     grammar.insert("S".to_string(), vec![
-        Rule::NonTerminal("A".to_string(), "B".to_string()),
+        Rule::NonTerminal("A".to_string(), "B".to_string())
     ]);
     grammar.insert("B".to_string(), vec![
         Rule::NonTerminal("B".to_string(), "C".to_string()),
-        Rule::Terminal("b".to_string()),
+        Rule::Terminal("b".to_string())
     ]);
     grammar.insert("A".to_string(), vec![Rule::Terminal("a".to_string())]);
     grammar.insert("C".to_string(), vec![Rule::Terminal("c".to_string())]);
 
     assert!(cyk("abc", &grammar, "S"));
     assert!(!cyk("acb", &grammar, "S"));
+}
+
+#[test]
+fn test_advanced_grammar() {
+    let mut grammar = HashMap::new();
+
+    grammar.insert("S".to_string(), vec![
+        Rule::NonTerminal("A".to_string(), "B".to_string()),
+        Rule::NonTerminal("B".to_string(), "C".to_string())
+    ]);
+    grammar.insert("A".to_string(), vec![
+        Rule::NonTerminal("B".to_string(), "A".to_string()),
+        Rule::Terminal("a".to_string())
+    ]);
+    grammar.insert("B".to_string(), vec![
+        Rule::NonTerminal("C".to_string(), "C".to_string()),
+        Rule::Terminal("b".to_string())
+    ]);
+    grammar.insert("C".to_string(), vec![
+        Rule::NonTerminal("A".to_string(), "B".to_string()),
+        Rule::Terminal("a".to_string())
+    ]);
+
+    assert!(cyk("aabab", &grammar, "S"));
+    assert!(!cyk("bababb", &grammar, "S"));
 }
 
 #[test]
